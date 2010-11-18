@@ -80,7 +80,7 @@
             test.echo('error：' + ev.message);
         });
 
-        bridge.on("init", function(ev) {
+        bridge.on("as3Init", function(ev) {
             
             test.echo('id: ' + ev.id, ',type: ' + ev.type + "<br/>");
         });
@@ -168,11 +168,19 @@
         bridge.on("swfReady", function(ev) {
             
             test.echo('id: ' + ev.id, ',type: ' + ev.type + "<br/>");
+			 test.echo('id: ' + ev.id, ',type: ' + ev.type+ "， isSWFReady:" + bridge.getReady() + "<br/>");
+			 if (bridge.getReady() != "ready") {
+				test.fail();
+				 test.echo('[swfReady]bridge.getReady error!');
+			}
         });
 		 bridge.on("bridgeReady", function(ev) {
             
             test.echo('id: ' + ev.id, ',type: ' + ev.type+ "， isSWFReady:" + bridge.getReady() + "<br/>");
-            if (bridge.getReady() != "ready")test.fail();
+            if (bridge.getReady() != "ready") {
+				test.fail();
+				 test.echo('bridge.getReady error!');
+			}
             
         });
 		test.echo("manual init");

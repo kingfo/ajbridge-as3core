@@ -15,6 +15,7 @@
   <classpaths>
     <class path="." />
     <class path="..\..\class" />
+    <class path="..\..\tools\as3unit\src" />
   </classpaths>
   <!-- Build options -->
   <build>

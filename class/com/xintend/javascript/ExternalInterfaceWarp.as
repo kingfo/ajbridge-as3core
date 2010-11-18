@@ -56,11 +56,11 @@ package com.xintend.javascript {
 		}
 		
 		
-		static public function call(functionName: String, ...args): void {
+		static public function call(functionName: String, ...args): * {
 			var a: Array;
 			a = [functionName];
 			try {
-			    ExternalInterface.call.apply(ExternalInterface, a.concat(args.slice()));
+			    return ExternalInterface.call.apply(ExternalInterface, a.concat(args.slice()));
 			}catch (error:Error) {
 				trace("set marshallExceptions:" + error.message);
 			}

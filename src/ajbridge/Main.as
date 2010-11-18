@@ -1,30 +1,27 @@
 package {
 	import com.xintend.ajbridge.core.AJBridge;
-	import flash.display.Sprite;
-	import flash.events.Event;
+	import com.xintend.display.Spirit;
 	/**
 	 * ...
 	 * @author Kingfo[Telds longzang]
 	 */
-	public class Main extends Sprite{
+	public class Main extends Spirit{
 		
 		public function Main() {
-			if (stage) init();
-			else addEventListener(Event.ADDED_TO_STAGE, init);
 			
 		}
 		
-		private function init(e:Event=null):void {
-			removeEventListener(Event.ADDED_TO_STAGE, init);
+		override public function init():void {
+			super.init();
 			
 			var params: Object = stage.loaderInfo.parameters;
-			
 			
 			AJBridge.bridge.deploy(params);
 			
 			AJBridge.bridge.activate();
-			
 		}
+		
+		
 		
 	}
 

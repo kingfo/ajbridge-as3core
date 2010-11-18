@@ -14,7 +14,7 @@ package com.xintend.utils {
 	  * single time unless periodic is set to true.
 	  * @param	fn				the function to execute or the name of the method in the 'o' object to execute.
 	  * @param	when			the number of milliseconds to wait until the fn is executed.
-	  * @param	periodic		if true, executes continuously at supplied interval until canceled.
+	  * @param	periodic		if true, executes continuously at supplied interval until canceled. default false.
 	  * @param	o				the context object.
 	  * @param	data			that is provided to the function. This accepts either a single
 	  * 						 item or an array. If an array is provided, the function is executed wit

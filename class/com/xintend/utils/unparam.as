@@ -18,8 +18,10 @@ package com.xintend.utils {
 	 * @param	sep
 	 * @return
 	 */
-	public function unparam(str:String,sep:String='&'):URLVariables  {
-		 if (typeof str !== 'string' || (str = trim(str)).length === 0) return new URLVariables();
+	public function unparam(str: String, sep: String = '&'): URLVariables  {
+		
+		
+		if (!str || (str = trim(str)).length === 0) return new URLVariables();
 
 		var ret:URLVariables = new URLVariables(),
 			pairs:Array = str.split(sep),

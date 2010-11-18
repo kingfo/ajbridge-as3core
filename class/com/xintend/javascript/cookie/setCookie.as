@@ -17,7 +17,7 @@ package com.xintend.javascript.cookie {
 										+"  if (domain) text += '; domain=' + domain;"
 										+"  if (path)text += '; path=' + path;"
 										+"  if (secure) text += '; secure';"
-										+"  doc.cookie = name + '=' + text;"
+										+"  document.cookie = name + '=' + text;"
 										+"}",name,val,expires,domain,path,secure
 										);
 	}
