@@ -5,9 +5,9 @@ package $(PackageName)$(CSLB){
 	$(CBI)* ...
 	$(CBI)* @author $(DefaultUser)
 	$(CBI)*/
-	public class Main extends Spirit $(CSLB){
+	public class $(ProjectName) extends Spirit $(CSLB){
 		
-		public function Main():void $(CSLB){
+		public function $(ProjectName)():void $(CSLB){
 			
 		}
 		
