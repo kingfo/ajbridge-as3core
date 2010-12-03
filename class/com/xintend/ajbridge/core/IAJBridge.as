@@ -5,7 +5,7 @@ package com.xintend.ajbridge.core {
 	 */
 	public interface IAJBridge{
 		
-		function getVersion(): String;
+		function getCoreVersion(): String;
 		
 		function get hasDeploy(): Boolean;
 		

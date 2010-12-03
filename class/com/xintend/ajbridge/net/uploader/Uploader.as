@@ -1,4 +1,4 @@
-package om.xintend.ajbridge.net.uploader {
+package com.xintend.ajbridge.net.uploader {
 	import com.xintend.events.RichEvent;
 	import flash.events.DataEvent;
 	import flash.events.ErrorEvent;

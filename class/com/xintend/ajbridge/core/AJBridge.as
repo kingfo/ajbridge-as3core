@@ -28,6 +28,7 @@ package com.xintend.ajbridge.core {
 		public static const SWF_READY: String = "swfReady";
 		/**
 		 * 内容完成时作为标准事件抛出
+		 * 关键事件
 		 */
 		public static const CONTENT_READY: String = "contentReady";
 		/**
@@ -52,7 +53,7 @@ package com.xintend.ajbridge.core {
 		 * as3core 的 AJBridge 版本号
 		 * @return
 		 */
-		public function getVersion(): String { return VERSION; }
+		public function getCoreVersion(): String { return VERSION; }
 			
 		
 		/**
@@ -82,7 +83,7 @@ package com.xintend.ajbridge.core {
 			addCallback(
 						"activate", activate,
 						"getReady", getReady,
-						"getVersion",getVersion
+						"getCoreVersion",getCoreVersion
 						);
 						
 			// 4.抛出初始化完成事件			
@@ -102,14 +103,14 @@ package com.xintend.ajbridge.core {
 		 * addCallback(
 						"activate", activate,
 						"getReady", getReady,
-						"getVersion",getVersion
+						"getCoreVersion",getCoreVersion
 						);
 		 * </pre>
 		 * <pre>
 		 * // name-function 对象
 		 * var callbaks:Object = {"activate": activate,
 								"getReady": getReady,
-								"getVersion":getVersion};
+								"getCoreVersion":getCoreVersion};
 			//some code...
 		 * addCallback(callbaks);
 		 * </pre>

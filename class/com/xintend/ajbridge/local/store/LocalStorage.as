@@ -19,20 +19,14 @@ package com.xintend.ajbridge.local.store {
 		
 		
 		
-		public function LocalStorage() {
+		public function LocalStorage(useCompression: Boolean = true, browser: String = null,secure:Boolean = false) {
+			_useCompression = useCompression;
+			_browser = browser || "";
 			
+			checkout(DEFAULT_NAME_PREFIX + _browser,null,secure);
 		}
 		
-		/**
-		 * 初始化本地存储
-		 * @param	useCompression					启用字节压缩
-		 * @param	browser							区分浏览器
-		 */
-		public function init(useCompression: Boolean = true, browser: String = "",secure:Boolean = false): void {
-			_useCompression = useCompression;
-			_browser = browser;
-			storageName = DEFAULT_NAME_PREFIX + _browser;
-		}
+		
 		
 		/**
 		 * 切换存储文件
@@ -40,10 +34,16 @@ package com.xintend.ajbridge.local.store {
 		 * @param	path							具体本地路径
 		 * @param	secure							
 		 */
-		public function checkOut(name:String,path:String=null,secure:Boolean = false): void {
+		public function checkout(name: String, path: String = null, secure: Boolean = false): void {
+			var oldName: String = storageName;
+			
 			storageName = name;
 			storagePath = path;
 			storageSecure = secure;
+			
+			trace("checkout")
+			
+			dispatchEvent(new StorageEvent(StorageEvent.CHECKOUT, null,"storageName",oldName,storageName));
 		}
 		
 		/**
@@ -51,7 +51,7 @@ package com.xintend.ajbridge.local.store {
 		 * @return
 		 */
 		public function getLength(): uint {
-			trace("getLength:", readArchive().hash.length);
+			trace("getLength");
 			return readArchive().hash.length;
 		}
 		/**
@@ -102,10 +102,10 @@ package com.xintend.ajbridge.local.store {
 		 * @param	index
 		 * @return
 		 */
-		public function key(index: int): String {
+		public function key(index: *): String {
 			////	统一为 null  避免 undefined
 			trace("key:", index);
-			if (isNaN(index)) return null;
+			if (isNaN(index) || !isFinite(index)) return null;
 			return readArchive().hash[index] || null;
 		}
 		/**
@@ -140,10 +140,21 @@ package com.xintend.ajbridge.local.store {
 		public function clear(): void {
 			var so: SharedObject = getSharedObject();
 			so.clear();
-			setModificationDate(so);
 			save(createEmptyArchive());
 			dispatchEvent(new StorageEvent(StorageEvent.CLEAR));
+			trace('clear');
 		}
+		/**
+		 * 销毁本地存储
+		 */
+		public function destroy(): void {
+			var so: SharedObject = getSharedObject();
+			so.clear();
+			save();
+			dispatchEvent(new StorageEvent(StorageEvent.DESTROY));
+			trace('destroy');
+		}
+		
 		/**
 		 * 获得已存字节大小  单位 B
 		 * @return
@@ -196,7 +207,7 @@ package com.xintend.ajbridge.local.store {
 		protected function getSharedObject(): SharedObject {
 			var so:SharedObject = SharedObject.getLocal(storageName,storagePath,storageSecure);
 			so.addEventListener(NetStatusEvent.NET_STATUS, onNetStatus);
-			dispatchEvent(new StorageEvent(StorageEvent.RELOAD,{isSuccess:so.hasOwnProperty("data")}));
+			dispatchEvent(new StorageEvent(StorageEvent.OPEN,so.hasOwnProperty("data")?"success":"failed"));
 			return so;
 		}
 		/**
@@ -204,7 +215,11 @@ package com.xintend.ajbridge.local.store {
 		 * @param	event
 		 */
 		protected function onNetStatus(event: NetStatusEvent): void {
-			dispatchEvent(event) ;
+			if (event.info.level === "error") {
+				dispatchEvent(new StorageEvent(StorageEvent.STATUS,"failed"));
+			}else {
+				dispatchEvent(new StorageEvent(StorageEvent.STATUS,"success"));
+			}
 		}
 		/**
 		 * 设置修改时间
@@ -218,41 +233,49 @@ package com.xintend.ajbridge.local.store {
 		 * @param	archive
 		 * @return
 		 */
-		protected function save(archive:Object): Boolean {
+		protected function save(archive:Object = null): Boolean {
 			var so: SharedObject = getSharedObject();
 			var bytes: ByteArray = new ByteArray();
-			var result:String;
+			var result: String;
+			var key: String;
 			////	与YUI SWFStore不同
 			////	每次操作保存都当作一次修改作为记录
 			////	而非有新值才变动
-			setModificationDate(so);
-
-			if (_useCompression) {
-				bytes.writeObject(archive);   
-				bytes.compress();    
-				so.data.archive = bytes;
-			}else {
-				so.data.archive = archive;
+			
+			if (archive) {
+				if (_useCompression) {
+					bytes.writeObject(archive);   
+					bytes.compress();    
+					so.data.archive = bytes;
+				}else {
+					so.data.archive = archive;
+				}
+				setModificationDate(so);
 			}
 			
 			try{
 				result = so.flush();
+				dispatchEvent(new StorageEvent(StorageEvent.CLOSE,result)); 
 	    	}catch(e:Error){
 				dispatchEvent(new StorageEvent(StorageEvent.ERROR,"SharedObject flush error"));
 			}
+			
 			switch(result) {
 				case SharedObjectFlushStatus.FLUSHED:
 					return true;
 				break;
 				case SharedObjectFlushStatus.PENDING:
-					dispatchEvent(new StorageEvent(StorageEvent.PENDING,null,archive.hash[archive.hash.length-1]));
+					if (archive) {
+						key = archive.hash[archive.hash.length - 1];
+					}
+					dispatchEvent(new StorageEvent(StorageEvent.PENDING,null,key));
 					return false;
 				break;
 				default:
 					dispatchEvent(new StorageEvent(StorageEvent.ERROR, "Flash Player Could not write SharedObject to disk."));
 					return false;
 			}
-			 
+			
 		}
 		/**
 		 * 即时读取存档
@@ -264,8 +287,8 @@ package com.xintend.ajbridge.local.store {
 			var bytes: ByteArray;
 			var archive: Object;
 			if (!so.data.hasOwnProperty("archive")) {
-				dispatchEvent(new StorageEvent(StorageEvent.EMPTY));
    				archive = createEmptyArchive();
+				dispatchEvent(new StorageEvent(StorageEvent.CREATE));
  			}else {
 				////	判断是否字节流
 				////	是则是经过压缩的数据

@@ -27,7 +27,7 @@ package com.xintend.ajbridge.local.store {
 		 * @param	n
 		 * @return
 		 */
-		function key(n: int): String;
+		function key(n: *): String;
 		/**
 		 * 删除指定 key 及对应值
 		 * @param	key

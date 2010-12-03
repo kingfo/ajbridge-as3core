@@ -9,7 +9,7 @@ package com.xintend.javascript.utils {
 		return ExternalInterfaceWarp.call("function (){"
 										+"return document.location;"
 										+"}"
-										);
+										) || {};
 	}
 		
 
