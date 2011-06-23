@@ -164,7 +164,8 @@ package com.xintend.ajbridge.core {
 				return;
 			}
 			if (ExternalInterfaceWarp.available) {
-				ExternalInterfaceWarp.call(_entry,_id,event);
+				ExternalInterfaceWarp.call(_entry, _id, event);
+				//FlashConnect.atrace(id,_entry,event.type)
 			}
 		}
 		/**
